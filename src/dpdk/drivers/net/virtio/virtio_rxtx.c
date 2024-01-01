@@ -206,7 +206,7 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 					vq->vq_queue_index, used_idx, vq->vq_split.ring.used->flags, start_idx, vq->vq_split.ring.used->ring[start_idx].id, vq->vq_split.ring.used->ring[start_idx].len);
 				}
 			}
-			if (err_count > 1024) {
+			if (err_count > 100) {
 				exit(-1);
 			}
 
@@ -332,6 +332,10 @@ virtqueue_enqueue_recv_refill(struct virtqueue *vq, struct rte_mbuf **cookie,
 		start_dp[idx].flags = VRING_DESC_F_WRITE;
 		vq->vq_desc_head_idx = start_dp[idx].next;
 		vq_update_avail_ring(vq, idx);
+		if (vq->vq_free_cnt < 3) {
+				PMD_DRV_LOG(ERR, "avail vring add descriptor id %u, free count:%u, count:%u",
+					idx, vq->vq_free_cnt, err_count);
+		}
 		if (vq->vq_desc_head_idx == VQ_RING_DESC_CHAIN_END) {
 			vq->vq_desc_tail_idx = vq->vq_desc_head_idx;
 			break;
