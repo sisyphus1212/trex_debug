@@ -185,7 +185,7 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 		cookie = (struct rte_mbuf *)vq->vq_descx[desc_idx].cookie;
 		err_count ++;
 		if (unlikely(cookie == NULL)) {
-			PMD_DRV_LOG(ERR, "vring descriptor with no mbuf cookie at %x, current used.idx %x free count:%x, count:%u",
+			PMD_DRV_LOG(ERR, "last_used_index:0x%x, current used.idx:0x%x free count:%x, count:%u",
 				vq->vq_used_cons_idx, vq->vq_split.ring.used->idx, vq->vq_free_cnt, err_count);
 			uint16_t start_idx = ((uint16_t)(used_idx - 8)) % vq->vq_nentries;
 			uint16_t end_idx =  ((uint16_t)(used_idx + 8)) % vq->vq_nentries;
