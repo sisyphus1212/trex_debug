@@ -167,6 +167,7 @@ virtqueue_dequeue_burst_rx_packed(struct virtqueue *vq,
 }
 
 int rx_times[8] = {0,0,0,0,0,0,0,0};
+int err_times[8] = {0,0,0,0,0,0,0,0};
 static uint16_t
 virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 			   uint32_t *len, uint16_t num)
@@ -185,6 +186,7 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 		cookie = (struct rte_mbuf *)vq->vq_descx[desc_idx].cookie;
 		rx_times[vq->vq_queue_index] ++;
 		if (unlikely(cookie == NULL)) {
+			err_times[vq->vq_queue_index] ++;
 			uint16_t hw_used_idx = ((uint16_t)vq->vq_split.ring.used->idx)%vq->vq_nentries;
 			PMD_DRV_LOG(ERR, "last_used_index:0x%x, avail_idx:0x%x, current_hw_used.idx:0x%x(elem_id:0x%x, elem_len:0x%x), vq_free_cnt:%x, rx_times:%u",
 				vq->vq_used_cons_idx, vq->vq_split.ring.avail->idx, vq->vq_split.ring.used->idx,
@@ -210,7 +212,8 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 					vq->vq_queue_index, used_idx, vq->vq_split.ring.used->flags, start_idx, vq->vq_split.ring.used->ring[start_idx].id, vq->vq_split.ring.used->ring[start_idx].len);
 				}
 			}
-			if (rx_times[vq->vq_queue_index] > 100) {
+
+			if (err_times[vq->vq_queue_index] > 1024) {
 				exit(-1);
 			}
 
