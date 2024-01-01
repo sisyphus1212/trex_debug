@@ -185,8 +185,8 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 		cookie = (struct rte_mbuf *)vq->vq_descx[desc_idx].cookie;
 		rx_times ++;
 		if (unlikely(cookie == NULL)) {
-			PMD_DRV_LOG(ERR, "last_used_index:0x%x, current used.idx:0x%x free_count:%x, rx_times:%u",
-				vq->vq_used_cons_idx, vq->vq_split.ring.used->idx, vq->vq_free_cnt, rx_times);
+			PMD_DRV_LOG(ERR, "last_used_index:0x%x, avail_idx:0x%x, current_hw_used.idx:0x%x free_count:%x, rx_times:%u",
+				vq->vq_used_cons_idx, vq->vq_split.ring.avail->idx, vq->vq_split.ring.used->idx, vq->vq_free_cnt, rx_times);
 			uint16_t start_idx = ((uint16_t)(used_idx - 8)) % vq->vq_nentries;
 			uint16_t end_idx =  ((uint16_t)(used_idx + 8)) % vq->vq_nentries;
 			if (end_idx < start_idx) {
