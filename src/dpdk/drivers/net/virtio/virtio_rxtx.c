@@ -185,7 +185,7 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 		cookie = (struct rte_mbuf *)vq->vq_descx[desc_idx].cookie;
 		rx_times[vq->vq_queue_index] ++;
 		if (unlikely(cookie == NULL)) {
-			PMD_DRV_LOG(ERR, "last_used_index:0x%x, avail_idx:0x%x, current_hw_used.idx:0x%x free_count:%x, rx_times:%u",
+			PMD_DRV_LOG(ERR, "last_used_index:0x%x, avail_idx:0x%x, current_hw_used.idx:0x%x vq_free_cnt:%x, rx_times:%u",
 				vq->vq_used_cons_idx, vq->vq_split.ring.avail->idx, vq->vq_split.ring.used->idx, vq->vq_free_cnt, rx_times[vq->vq_queue_index]);
 			uint16_t start_idx = ((uint16_t)(used_idx - 8)) % vq->vq_nentries;
 			uint16_t end_idx =  ((uint16_t)(used_idx + 8)) % vq->vq_nentries;
@@ -333,7 +333,7 @@ virtqueue_enqueue_recv_refill(struct virtqueue *vq, struct rte_mbuf **cookie,
 		vq->vq_desc_head_idx = start_dp[idx].next;
 		vq_update_avail_ring(vq, idx);
 		if (vq->vq_free_cnt < 3) {
-				PMD_DRV_LOG(ERR, "avail vring add descriptor id:0x%x, free count:%u, rx_times:%u",
+				PMD_DRV_LOG(ERR, "avail vring add descriptor id:0x%x, vq_free_cnt:%u, rx_times:%u",
 					idx, vq->vq_free_cnt, rx_times[vq->vq_queue_index]);
 		}
 		if (vq->vq_desc_head_idx == VQ_RING_DESC_CHAIN_END) {
