@@ -202,6 +202,7 @@ virtio_set_multiple_queues_auto(struct rte_eth_dev *dev, uint16_t nb_queues)
 static int
 virtio_set_multiple_queues(struct rte_eth_dev *dev, uint16_t nb_queues)
 {
+	return 0;
 	struct virtio_hw *hw = dev->data->dev_private;
 
 	if (virtio_with_feature(hw, VIRTIO_NET_F_RSS))
