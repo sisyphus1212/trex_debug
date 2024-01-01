@@ -38,10 +38,11 @@ try:
     ]
     pkt = STLPktBuilder(pkt = pkt_base, vm = vm)
     stream = STLStream(packet = pkt, mode = STLTXSingleBurst(pps = 100, total_pkts = count))
-    
+
 
     # prepare our ports
     c.reset(ports = port)
+    c.set_service_mode(1)
     c.set_port_attr(promiscuous=True)
 
     # add stream to port
@@ -49,7 +50,8 @@ try:
 
     # starting the capture
     c.set_service_mode(port)
-    
+    c.set_service_mode(1)
+
 
     capture_id = c.start_capture(rx_ports = port)['id']
 

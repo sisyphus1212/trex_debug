@@ -42,7 +42,7 @@ class DynamicProfileTest:
         self.rate =rate
         self.c = client
         self.streams = streams
-        self.min_rand_duration = min_rand_duration 
+        self.min_rand_duration = min_rand_duration
         self.max_rand_duration = max_rand_duration
         self.min_tick = min_tick
         self.max_tick = max_tick
@@ -69,7 +69,7 @@ class DynamicProfileTest:
                          IP(src="16.0.0.1",dst="48.0.0.1") /
                          UDP(sport=1025,dport=1025) /
                          Raw(load='\x55' * 10)
-                )    
+                )
         for o in range(0,self.streams):
            s1 = STLStream(packet = STLPktBuilder(pkt = packet),
                                       mode = STLTXCont())
@@ -106,20 +106,20 @@ class DynamicProfileTest:
             while True:
 
                 if tick > tick_action and (tick<max_tick):
-                    profile_name = self.build_profile_id(self.tx_port, profile_id) 
+                    profile_name = self.build_profile_id(self.tx_port, profile_id)
                     duration = random.randrange(self.min_rand_duration,self.max_rand_duration)
                     stream_ids = c.add_streams(streams = self.build_streams(), ports = [profile_name])
                     profiles[profile_id] = 1
                     print(" {} new profile {} {} {}".format(tick, profile_name, duration,len(profiles)) )
                     c.start(ports = [profile_name], mult = self.rate, duration = duration)
                     profile_id += 1
-                    tick_action = tick + random.randrange(self.min_tick,self.max_tick) # next action 
+                    tick_action = tick + random.randrange(self.min_tick,self.max_tick) # next action
 
                 time.sleep(1);
                 tick += 1
 
 
-                # check events 
+                # check events
                 while True:
                     event = c.pop_event()
                     if event == None:
@@ -202,7 +202,7 @@ class STLClient_Test(CStlGeneral_Test):
         self.port_info = self.c.get_port_info(ports = self.rx_port)[0]
         self.drv_name = self.port_info['driver']
 
-        # due to defect trex-325 
+        # due to defect trex-325
         #if  self.drv_name == 'net_mlx5':
         #    print("WARNING disable strict due to trex-325 on mlx5")
         #    self.strict = False
@@ -379,7 +379,7 @@ class STLClient_Test(CStlGeneral_Test):
         tx_pps = self.c.get_stats(ports = [0])[0]['opackets'] / delay
         f = 0.1
         if self.is_VM:
-            f = 0.4 # hypervisor is not stable 
+            f = 0.4 # hypervisor is not stable
         assert (expected_pps * (1.0 - f) < tx_pps < expected_pps * (1.0 + f)), 'expected TX ~%spps, got: %s' % (expected_pps, tx_pps)
 
     def test_pause_resume_update_streams(self):
@@ -599,7 +599,7 @@ class STLClient_Test(CStlGeneral_Test):
 
             self.c.set_service_mode(ports = [self.tx_port, self.rx_port])
 
-            # VICs adds VLAN 0 on RX side
+            # VICs adds VLAN 0 on RX sidex``
             tx_capture_id = self.c.start_capture(tx_ports = self.tx_port, bpf_filter = 'udp')['id']
             rx_capture_id = self.c.start_capture(rx_ports = self.rx_port, bpf_filter = 'udp or (vlan and udp)')['id']
 
@@ -639,8 +639,6 @@ class STLClient_Test(CStlGeneral_Test):
             # RX pkts are not the same - loose check, all here and are UDP
             self.verify(len(pkts), len(rx_pkts))
             assert (all(['UDP' in Ether(x) for x in rx_pkts]))
-
-
 
         except STLError as e:
             # cleanup if needed
@@ -807,7 +805,7 @@ class STLClient_Test(CStlGeneral_Test):
             self.c.start(ports = [0, 1], core_mask = STLClient.CORE_MASK_PIN)
             time.sleep(0.1)
 
-            # for pin mode with latency core 0 should opreate on both 
+            # for pin mode with latency core 0 should opreate on both
             cpu_stats = self.get_cpu_usage()
 
             # core 0 should be associated with both
@@ -934,7 +932,7 @@ class STLClient_Test(CStlGeneral_Test):
                     stats[self.tx_port]['ipackets'],
                     stats[self.rx_port]['ipackets'],
                     )
-                # it is not burst so it could be not accurate 
+                # it is not burst so it could be not accurate
                 for param in check_params:
                     assert get_error_in_percentage(golden, param) < 0.15, 'golden: %s, got: %s' % (golden, param)
 
@@ -1025,7 +1023,7 @@ class STLClient_Test(CStlGeneral_Test):
             # this test is sensitive and does not work good on E1000
             return;
         if CTRexScenario.setup_name in ('trex21', 'trex22'):
-            # sensitive to this test, there are a few drops that are valid due to the virtual nature of the interfaces that make noise 
+            # sensitive to this test, there are a few drops that are valid due to the virtual nature of the interfaces that make noise
             # better not to test it
             return;
 
