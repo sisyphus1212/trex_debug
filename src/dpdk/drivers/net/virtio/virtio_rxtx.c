@@ -166,6 +166,7 @@ virtqueue_dequeue_burst_rx_packed(struct virtqueue *vq,
 	return i;
 }
 
+int err_count = 0;
 static uint16_t
 virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 			   uint32_t *len, uint16_t num)
@@ -182,10 +183,10 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 		desc_idx = (uint16_t) uep->id;
 		len[i] = uep->len;
 		cookie = (struct rte_mbuf *)vq->vq_descx[desc_idx].cookie;
-
+		err_count ++;
 		if (unlikely(cookie == NULL)) {
-			PMD_DRV_LOG(ERR, "vring descriptor with no mbuf cookie at %u, current used.idx %u free count:%u",
-				vq->vq_used_cons_idx, vq->vq_split.ring.used->idx, vq->vq_free_cnt);
+			PMD_DRV_LOG(ERR, "vring descriptor with no mbuf cookie at %u, current used.idx %u free count:%u, count:%u",
+				vq->vq_used_cons_idx, vq->vq_split.ring.used->idx, vq->vq_free_cnt, err_count);
 			uint16_t start_idx = (used_idx - 8) % vq->vq_nentries;
 			uint16_t end_idx = (used_idx + 8) % vq->vq_nentries;
 			if (end_idx < start_idx) {
@@ -205,7 +206,10 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 					vq->vq_queue_index, used_idx, vq->vq_split.ring.used->flags, start_idx, vq->vq_split.ring.used->ring[start_idx].id, vq->vq_split.ring.used->ring[start_idx].len);
 				}
 			}
-			exit(-1)
+			if (err_count > 1024) {
+				exit(-1);
+			}
+
 			break;
 		}
 
