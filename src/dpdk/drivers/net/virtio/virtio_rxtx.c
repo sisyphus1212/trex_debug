@@ -166,7 +166,7 @@ virtqueue_dequeue_burst_rx_packed(struct virtqueue *vq,
 	return i;
 }
 
-int rx_times[8] = 0;
+int rx_times[8] = {0,0,0,0,0,0,0,0};
 static uint16_t
 virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 			   uint32_t *len, uint16_t num)
