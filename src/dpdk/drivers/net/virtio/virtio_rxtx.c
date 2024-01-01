@@ -166,7 +166,7 @@ virtqueue_dequeue_burst_rx_packed(struct virtqueue *vq,
 	return i;
 }
 
-int err_count = 0;
+int rx_times = 0;
 static uint16_t
 virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 			   uint32_t *len, uint16_t num)
@@ -183,10 +183,10 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 		desc_idx = (uint16_t) uep->id;
 		len[i] = uep->len;
 		cookie = (struct rte_mbuf *)vq->vq_descx[desc_idx].cookie;
-		err_count ++;
+		rx_times ++;
 		if (unlikely(cookie == NULL)) {
-			PMD_DRV_LOG(ERR, "last_used_index:0x%x, current used.idx:0x%x free_count:%x, rx_count:%u",
-				vq->vq_used_cons_idx, vq->vq_split.ring.used->idx, vq->vq_free_cnt, err_count);
+			PMD_DRV_LOG(ERR, "last_used_index:0x%x, current used.idx:0x%x free_count:%x, rx_times:%u",
+				vq->vq_used_cons_idx, vq->vq_split.ring.used->idx, vq->vq_free_cnt, rx_times);
 			uint16_t start_idx = ((uint16_t)(used_idx - 8)) % vq->vq_nentries;
 			uint16_t end_idx =  ((uint16_t)(used_idx + 8)) % vq->vq_nentries;
 			if (end_idx < start_idx) {
@@ -206,7 +206,7 @@ virtqueue_dequeue_burst_rx(struct virtqueue *vq, struct rte_mbuf **rx_pkts,
 					vq->vq_queue_index, used_idx, vq->vq_split.ring.used->flags, start_idx, vq->vq_split.ring.used->ring[start_idx].id, vq->vq_split.ring.used->ring[start_idx].len);
 				}
 			}
-			if (err_count > 100) {
+			if (rx_times > 100) {
 				exit(-1);
 			}
 
@@ -333,8 +333,8 @@ virtqueue_enqueue_recv_refill(struct virtqueue *vq, struct rte_mbuf **cookie,
 		vq->vq_desc_head_idx = start_dp[idx].next;
 		vq_update_avail_ring(vq, idx);
 		if (vq->vq_free_cnt < 3) {
-				PMD_DRV_LOG(ERR, "avail vring add descriptor id:0x%x, free count:%u, count:%u",
-					idx, vq->vq_free_cnt, err_count);
+				PMD_DRV_LOG(ERR, "avail vring add descriptor id:0x%x, free count:%u, rx_times:%u",
+					idx, vq->vq_free_cnt, rx_times);
 		}
 		if (vq->vq_desc_head_idx == VQ_RING_DESC_CHAIN_END) {
 			vq->vq_desc_tail_idx = vq->vq_desc_head_idx;
