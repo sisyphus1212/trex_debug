@@ -333,7 +333,7 @@ virtqueue_enqueue_recv_refill(struct virtqueue *vq, struct rte_mbuf **cookie,
 		vq->vq_desc_head_idx = start_dp[idx].next;
 		vq_update_avail_ring(vq, idx);
 		if (vq->vq_free_cnt < 3) {
-				PMD_DRV_LOG(ERR, "avail vring add descriptor id %u, free count:%u, count:%u",
+				PMD_DRV_LOG(ERR, "avail vring add descriptor id %x, free count:%u, count:%u",
 					idx, vq->vq_free_cnt, err_count);
 		}
 		if (vq->vq_desc_head_idx == VQ_RING_DESC_CHAIN_END) {
